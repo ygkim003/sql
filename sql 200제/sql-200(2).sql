@@ -236,10 +236,74 @@ FROM emp
 
 -- 021 특정 철자를 N개 만큼 채우기
 -- LPAD, RPAD
+-- 문자열만 됨 
 
-SELECT ename, PAD (sal, 10, '*') AS salary1
+SELECT ename, LPAD (sal::VARCHAR, 10, '*') AS sal1, RPAD(sal::VARCHAR, 10, '*') AS sal2
 FROM emp
 ;
+
+-- 022 특정 철자 잘라내기
+-- TRIM, LTRIM, RTRIM
+
+SELECT 
+    'SASAS', 
+    LTRIM('SASAS', 'S'), 
+    RTRIM('SASAS', 'S'), 
+    TRIM('SASAS', 'S')
+;
+
+
+-- 023 반올림해서 출력
+-- ROUND( 숫자, 자릿수 )
+-- 자릿수 양수 - 소숫점,   음수 - 1의자리이
+
+SELECT ename, ROUND(sal, -3) AS sal1
+FROM emp
+ORDER BY sal1 ASC 
+;
+
+
+-- 024 숫자를 버리고 출력 
+-- TRUNC 
+
+-- 2 면 . 기준 오른쪽 2
+SELECT '876.567' AS num, TRUNC('876.567', 2) 
+;
+
+-- -2 면 . 기준 왼쪽 2
+SELECT '876.567' AS num, TRUNC('876.567', -2) 
+;
+
+
+-- 025 나눈 나머지 값 출력 
+-- MOD 
+
+SELECT ename, MOD (sal, 11)
+FROM emp
+;
+
+-- 026 날짜 간 개월 수 출력 
+-- MONTHS_BETWEEN, POSTGRESQL 미지원 
+
+-- 최신날짜 - 옛날날짜 로 사용 
+SELECT ename, hiredate, current_date, current_date-hiredate 
+FROM emp
+;
+
+
+-- 027 개월 수 더한 날짜 출력하기
+-- ADD_MONTHS 
+
+SELECT ename, hiredate, date ('1989-03-03'), (hiredate+ 100) AS add100
+FROM emp 
+;
+
+
+SELECT ename, hiredate, hiredate + INTERVAL '2 year 1 month 1 h 33m'
+FROM emp 
+;
+
+
 
 
 
