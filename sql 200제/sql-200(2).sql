@@ -293,6 +293,7 @@ FROM emp
 
 -- 027 개월 수 더한 날짜 출력하기
 -- ADD_MONTHS 
+-- 날짜 + 날짜는 안되고 날짜 + 숫자 
 
 SELECT ename, hiredate, date ('1989-03-03'), (hiredate+ 100) AS add100
 FROM emp 
@@ -304,14 +305,166 @@ FROM emp
 ;
 
 
+-- 028 특정 날짜 뒤에 오는 요일 날짜 출력하기 
+-- NEXT_DAY 
+-- postgresql 미지원 
+-- SELECT NEXT_DAY('2019/05/22', '월요일') ;
+
+SELECT date_trunc('week', date'2020-06-11')
+;
+
+-- 029 특정날짜가 있는 달의 마지막 날짜 출력하기 
+-- LAST_DAY 
 
 
+SELECT date_trunc('month', current_date + INTERVAL '1 month')::date - 1
+;
 
 
+-- 030 문자형으로 데이터 유형 변환하기
+-- TO_CHAR 
+
+SELECT ename, to_char(hiredate, 'MON DY') AS 요일, to_char (sal, '999,999') AS 월급 
+FROM emp
+WHERE ename='SCOTT'
+;
 
 
+-- 031 날짜형으로 데이터 유형 변환하
+-- TO_DATE 
+-- where 절에 to_date 가 출력 결과 모습 변화엔 반응이 없
+
+SELECT ename, hiredate
+FROM emp
+WHERE hiredate = to_date('81/11/17', 'YY/MM/DD')
+;
 
 
+-- 032 암시적 형 변환 이해하기
+
+SELECT ename, sal
+FROM emp
+WHERE sal = '3000'
+;
 
 
+-- 033 NULL 값 대신 다른 데이터 출력하기 
+-- NVL, NVL2 
+-- NVL 대신 COALESCE 
 
+SELECT ename, comm, COALESCE(COMM, 0)
+FROM emp
+;
+
+SELECT ename, sal, comm, COALESCE(COMM, sal+COALESCE(comm, 0))
+FROM emp
+;
+
+
+-- 034 if문을 sql로 구현하기 
+-- DECODE  
+-- postgresql 미지
+
+SELECT ename, deptno, 
+       CASE deptno
+            WHEN 10 THEN 300 
+            WHEN 20 THEN 400
+            WHEN 30 THEN 500
+            ELSE 0 END 보너스 
+FROM emp
+;
+
+
+SELECT ename, mod(empno, 2),
+        CASE mod(empno, 2)
+            WHEN 0 THEN '짝수'
+            WHEN 1 THEN '홀수' 
+        END 홀짝
+FROM emp
+;
+
+
+-- 036 최대값 출력하기
+-- MAX 
+
+SELECT MAX(sal)
+FROM emp
+;
+
+-- 에러 발생 코드
+--단일 그룹의 그룹 함수가 아닙니다.
+SELECT job, max(sal) 
+FROM emp
+WHERE job='SALESMAN'
+;
+
+
+-- 동작 코드
+SELECT job, max(sal)
+FROM emp 
+WHERE job = 'SALESMAN'
+GROUP BY job
+;
+
+SELECT deptno, max(sal)
+FROM emp 
+GROUP BY deptno 
+;
+
+
+-- 037 최소값 출력하기 
+-- MIN 
+SELECT min (sal)
+FROM emp 
+;
+
+SELECT deptno, min(sal)
+FROM emp
+GROUP BY deptno
+;
+
+SELECT ename, sal
+FROM emp 
+WHERE sal = (SELECT min(sal) FROM emp )
+;
+
+-- 038 평균값 출력하기 
+-- AVG
+
+SELECT AVG(comm)
+FROM emp
+;
+
+SELECT ROUND(AVG(COALESCE (comm ,0)))
+FROM emp
+;
+
+
+-- 039 토탈 값 출력하기 
+-- SUM 
+
+SELECT deptno, sum (sal)
+FROM emp 
+GROUP BY deptno 
+;
+
+SELECT job, sum (sal)
+FROM emp
+GROUP BY job 
+ORDER BY sum(sal) DESC 
+;
+
+SELECT job , sum(sal)
+FROM emp e
+WHERE job != 'SALESMAN'
+GROUP BY job 
+HAVING sum(sal) >= 4000
+;
+
+
+-- 040 건수 출력하기
+-- COUNT
+
+SELECT COUNT(comm), COUNT(COALESCE(comm, 0))
+FROM emp
+;
